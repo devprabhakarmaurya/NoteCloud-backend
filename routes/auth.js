@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
 //Create a user with post that doesn't require auth api = "/api/auth/createuser"
 router.post('/createuser', [
@@ -24,7 +25,10 @@ router.post('/createuser', [
         if (!user) {
             user = new User({ name, email, password });
             await user.save();
-            res.json({ message: 'User created successfully', user });
+
+            // Generate a JWT token
+            const token = jwt.sign({user: user._id}, process.env.JWT_SIGN)
+            res.json({ message: 'User created successfully', user, token });
         }
         else {
             return res.status(400).json({ error: "Sorry user exists with this email" });
