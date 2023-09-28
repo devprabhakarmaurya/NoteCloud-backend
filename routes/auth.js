@@ -4,6 +4,7 @@ const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const verifytoken = require('../middleware/verifytoken');
 
 //ROUTE 1: Create a user with post that doesn't require auth POST- "/api/auth/createuser" No login required
 router.post('/createuser', [
@@ -41,7 +42,7 @@ router.post('/createuser', [
 
 
 })
-//ROUTE 2:  Authenticate the user with POST /api/auth/login No login required
+//ROUTE 2:  Authenticate the user with POST "/api/auth/login" No login required
 router.post('/login', [
     body("email").notEmpty().isEmail().withMessage("Please enter valid email"),
     body("password").notEmpty().withMessage("Password should not be blank"),
@@ -74,6 +75,19 @@ router.post('/login', [
              // Bad request with error when email is wrong
             return res.status(400).json({ error: "Invalid Credential" });
         }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+})
+
+//ROUTE 3: Get User data with POST "/api/auth/getuser" Login Required
+router.post("/getuser", verifytoken , async (req,res)=>{   //verifytoken is the middleware
+     const userId = req.user;                              // req.user came from middleware verifytoken which have id of user 
+    try {
+        // finding by id and select all the creds without password
+        const user = await User.findById(userId).select('-password');
+        res.json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
