@@ -15,6 +15,7 @@ router.post('/createuser', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
+    //destructuring req.body 
     const { name, email, password } = req.body;
     // Checking email exist already and then creating new user
     // Using await is neccessary so that it is promise 
