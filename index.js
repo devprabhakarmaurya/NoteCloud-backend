@@ -3,14 +3,14 @@ const express = require('express')
 
 connectToMongo();
 const app = express()
-const port = 3000
+const port = process.env.PORT || 5000
 
 
 //middleware
 app.use(express.json())
 
 //routes
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth/', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
 
 
