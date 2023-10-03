@@ -21,16 +21,18 @@ router.post("/addnote", verifytoken, [
     body('description').isLength({ min: 5 }).withMessage("Invalid Description"),
 ], async (req, res) => {
     try {
-        //Destructuirng the req.body
         const { title, description, tag } = req.body;
         const note = new Note({
             title: title,
             description: description,
             tag: tag,
-            user: req.user,  // for ref to user
-        })
-        note.save(); // for saving the note in db
-        res.status(201).json({ message: 'Added Note Successfully' }, note);
+            user: req.user
+        });
+
+        const savedNote = await note.save();
+        
+        // Send a 201 Created status and the saved note as JSON
+        res.status(201).json({ message: 'Note added successfully', note: savedNote });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });
