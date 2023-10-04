@@ -48,6 +48,7 @@ router.post('/login', [
     body("password").notEmpty().withMessage("Password should not be blank"),
 
 ], async (req, res) => {
+    let success = false;
     // errs in validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -64,16 +65,19 @@ router.post('/login', [
                 //Generating auth token 
                 const token = jwt.sign({user: user._id}, process.env.JWT_SIGN)
                 //sending token as response
-                res.json({ message: 'User Login Successfuly', token });
+                success = true;
+                res.json({success, message: 'User Login Successfuly', token });
             }
             else{
                 // Bad request with error when password is wrong
-                return res.status(400).json({ error: "Invalid Credential" });
+                success = false;
+                return res.status(400).json({success, message: "Invalid Credential" });
             }
         }
         else{
              // Bad request with error when email is wrong
-            return res.status(400).json({ error: "Invalid Credential" });
+             success = false;
+            return res.status(400).json({success, message: "Invalid Credential" });
         }
     } catch (error) {
         console.error(error);
