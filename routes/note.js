@@ -59,7 +59,7 @@ router.put('/updatenote/:id', verifytoken, async (req, res) => {
         };
         //finding note by id and updating with new obj newNote
         note = await Note.findByIdAndUpdate(req.params.id, newNote, {new: true});
-        res.status(201).json({ message: 'Updated Note Successfully' });
+        res.status(201).json(note);
         }catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Server error' });
